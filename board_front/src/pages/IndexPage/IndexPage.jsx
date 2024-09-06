@@ -1,8 +1,7 @@
 import { css } from '@emotion/react';
-import React  from 'react';
+import React from 'react';
 import { useQueryClient } from 'react-query';
 import { Link, useNavigate } from 'react-router-dom';
-import { v4 as uuid } from 'uuid'
 /** @jsxImportSource @emotion/react */
 
 const layout = css`
@@ -75,9 +74,9 @@ const userInfoBox = css`
     display: flex;
     justify-content: flex-start;
     width: 100%;
-`
+`;
 
-const profileImgBox = css`
+const profileImgBox = css`  
     box-sizing: border-box;
     display: flex;
     justify-content: center;
@@ -88,11 +87,10 @@ const profileImgBox = css`
     box-shadow: 0px 0px 2px #00000088;
     cursor: pointer;
     overflow: hidden;
-
     & > img {
         height: 100%;
     }
-`
+`;
 
 const profileInfo = css`
     box-sizing: border-box;
@@ -112,14 +110,17 @@ const profileInfo = css`
         font-size: 16px;
         cursor: pointer;
     }
-`
+`;
 
 function IndexPage(props) {
     const navigate = useNavigate();
 
     const queryClient = useQueryClient();
-    const userInfoState = queryClient.getQueryState("userInfoQuery");
     const accessTokenValidState = queryClient.getQueryState("accessTokenValidQuery");
+    const userInfoState = queryClient.getQueryState("userInfoQuery");
+
+    console.log(accessTokenValidState);
+    console.log(userInfoState);
 
     const handleLoginButtonOnClick = () => {
         navigate("/user/login");
@@ -129,22 +130,81 @@ function IndexPage(props) {
         localStorage.removeItem("accessToken");
         window.location.replace("/");
     }
+
     return (
         <div css={layout}>
             <header css={header}>
-                <input type="search" placeholder='검색어를 입력해 주세요.'/>
+                <input type="search" placeholder='검색어를 입력해 주세요.' />
             </header>
 
             <main css={main}>
                 <div css={leftBox}>
-                    <Link to={"/board"}>게시글</Link>
+                    <Link to={"/board/detail/1"}>게시글</Link>
                     <Link to={"/board/write"}>글쓰기</Link>
                 </div>
                 {
-                    accessTokenValidState.status !== "success"
-                    ?
-                        accessTokenValidState.status !== "error"
-                        ? <></>
+                    accessTokenValidState?.status !== "success"
+                        ?
+                        accessTokenValidState?.status !== "error"
+                            ?
+                            <></>
+                            :
+                            <div css={rightBox}>
+                                <p>더 안전하고 편리하게 이용하세요</p>
+                                <button onClick={handleLoginButtonOnClick}>로그인</button>
+                                <div>
+                                    <Link to={"/user/help/id"}>아이디 찾기</Link>
+                                    <Link to={"/user/help/pw"}>비밀번호 찾기</Link>
+                                    <Link to={"/user/join"}>회원가입</Link>
+                                </div>
+                            </div>
+                        :
+                        <div css={rightBox}>
+                            <div css={userInfoBox}>
+                                <div css={profileImgBox} onClick={() => navigate("/profile")}>
+                                    <img src={userInfoState.data?.data.img} alt="" />
+                                </div>
+                                <div css={profileInfo}>
+                                    <div>
+                                        <div>{userInfoState.data?.data.username}님</div>
+                                        <div>{userInfoState.data?.data.email}</div>
+                                    </div>
+                                    <button onClick={handleLogoutButtonOnClick}>로그아웃</button>
+                                </div>
+                            </div>
+                        </div>
+                }
+            </main>
+
+            {/* 
+
+
+
+
+
+            {
+                accessTokenValidState.status === "success" || userInfoState.status ===  "success" 
+                ? 
+                    <div css={rightBox}>
+                        <div css={userInfoBox}>
+                            <div css={profileImgBox}>
+                                <img src="" alt="" />
+                            </div>
+                            <div css={profileInfo}>
+                                <div>
+                                    <div>{userInfoState.data.data.username}님</div>
+                                    <div>{userInfoState.data.data.email}</div>
+                                </div>
+                                <button onClick={handleLogoutButtonOnClick}>로그아웃</button>
+                            </div>
+                        </div>
+                    </div>
+                : 
+                <main css={main}>
+                    <div css={leftBox}></div>
+                    {
+                        userInfoState.status === "success" ?
+                        
                         :
                         <div css={rightBox}>
                             <p>더 안전하고 편리하게 이용하세요</p>
@@ -155,23 +215,10 @@ function IndexPage(props) {
                                 <Link to={"/user/join"}>회원가입</Link>
                             </div>
                         </div>
-                        :
-                        <div css={rightBox}>
-                            <div css={userInfoBox}>
-                                <div css={profileImgBox} onClick={() => navigate("/profile")}>
-                                    <img src={userInfoState.data?.data.img} alt="" />
-                                </div>
-                                <div css={profileInfo}>
-                                    <div>
-                                        <div>{userInfoState.data?.data.name}님</div>
-                                        <div>{userInfoState.data?.data.email}</div>
-                                    </div>
-                                    <button onClick={handleLogoutButtonOnClick}>로그아웃</button>
-                                </div>
-                            </div>
-                        </div>
-                }
-            </main>
+                    }
+                </main>
+            } */}
+
         </div>
     );
 }

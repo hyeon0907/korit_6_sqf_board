@@ -10,24 +10,27 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TokenService {
+
     @Autowired
     private UserMapper userMapper;
 
     @Autowired
     private JwtProvider jwtProvider;
 
-    public Boolean isValidAccessToken(String bearerAccessToken) throws AccessTokenValidException {
+    public Boolean isValidAccessToken(String bearerAccessToken) {
         try {
             String accessToken = jwtProvider.removeBearer(bearerAccessToken);
             Claims claims = jwtProvider.getClaims(accessToken);
             Long userId = ((Integer) claims.get("userId")).longValue();
             User user = userMapper.findById(userId);
-            if(user == null){
-                throw new AccessTokenValidException("인증 토큰이 유효하지 않습니다.");
+
+            if(user == null) {
+                throw new RuntimeException();
             }
         } catch (RuntimeException e) {
             throw new AccessTokenValidException("AccessToken 유효성 검사 실패");
         }
+
         return true;
     }
 }

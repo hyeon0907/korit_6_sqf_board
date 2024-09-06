@@ -1,6 +1,6 @@
 import { instance } from "./util/instance";
 
-export const oauth2MergeApi = async (data) => {
+export const oauth2MergeApi = async (user) => {
     let mergeData = {
         isSuceess: false,
         fieldErrors: [
@@ -11,9 +11,9 @@ export const oauth2MergeApi = async (data) => {
         ]
     }
     try {
-        const response = await instance.post("/auth/oauth2/merge", data);
+        const response = await instance.post("/auth/oauth2/merge", user);
         mergeData = {
-            isSuceess: true,
+            isSuceess: true
         }
     } catch (error) {
         const response = error.response;
@@ -35,11 +35,15 @@ export const oauth2MergeApi = async (data) => {
     }
 
     return mergeData;
-};
+}
 
-export const oauth2JoinApi = async (data) => {
-    let joinData = {
+export const oAuth2SignupApi = async (user) => {
+    let signupData = {
         isSuceess: false,
+        ok: {
+            message: "",
+            user: null
+        },
         fieldErrors: [
             {
                 field: "",
@@ -48,13 +52,14 @@ export const oauth2JoinApi = async (data) => {
         ]
     }
     try {
-        const response = await instance.post("/auth/oauth2/join", data);
-        joinData = {
+        const response = await instance.post("/auth/oauth2/signup", user);
+        signupData = {
             isSuceess: true,
+            ok: response.data,
         }
     } catch (error) {
         const response = error.response;
-        joinData = {
+        signupData = {
             isSuceess: false,
             fieldErrors: response.data.map(fieldError => ({
                 field: fieldError.field, 
@@ -63,5 +68,5 @@ export const oauth2JoinApi = async (data) => {
         }
     }
 
-    return joinData;
-};
+    return signupData;
+}

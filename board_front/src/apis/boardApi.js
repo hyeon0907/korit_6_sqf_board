@@ -11,15 +11,15 @@ export const boardApi = async (data) => {
         const response = await instance.post("/auth/board", data);
         BoardData = {
             isSuceess: true,
-            ok: response.data,
+            boardId: response.data,
         }
     } catch (error) {
         const response = error.response;
-        console.log(response);
         BoardData = {
             isSuceess: false,
-            defaultMessage: response.data.map(fieldError => fieldError.defaultMessage),
+            defaultMessage: response.status === 404? response.data: response.data.map(fieldError => fieldError.defaultMessage),
         }
+        
     }
 
     return BoardData;

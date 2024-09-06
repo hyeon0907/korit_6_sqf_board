@@ -1,9 +1,8 @@
-import { css } from '@emotion/react';
-import React, { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { oauth2JoinApi, oauth2MergeApi } from '../../apis/oauth2Api';
-import { signinApi } from '../../apis/signinApi';
 /** @jsxImportSource @emotion/react */
+import { css } from "@emotion/react";
+import { useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { oAuth2SignupApi, oauth2MergeApi } from "../../apis/oauth2Api";
 
 const layout = css`
     display: flex;
@@ -15,7 +14,7 @@ const layout = css`
 const logo = css`
     font-size: 24px;
     margin-bottom: 40px;
-`
+`;
 
 const selectMenuBox = css`
     display: flex;
@@ -29,6 +28,7 @@ const selectMenuBox = css`
     }
 
     & > label {
+        box-sizing: border-box;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -52,7 +52,7 @@ const selectMenuBox = css`
         background-color: #fafafa;
         box-shadow: 0px 0px 5px #00000033 inset;
     }
-`
+`;
 
 const joinInfoBox = css`
     display: flex;
@@ -109,9 +109,9 @@ const joinButton = css`
 
 function OAuth2JoinPage(props) {
     const navigate = useNavigate();
-    const [ searchParams ] = useSearchParams();
-    const [selectMenu, setSelectMenu] = useState("join");
+    const [searchParams] = useSearchParams();
 
+    const [selectMenu, setSelectMenu] = useState("merge");
 
     const [inputUser, setInputUser] = useState({
         username: "",
@@ -129,7 +129,7 @@ function OAuth2JoinPage(props) {
         email: <></>,
     });
 
-    const handleSelectMenuOnChange = (e) => {
+    const handleSeletMenuOnChange = (e) => {
         setInputUser({
             username: "",
             password: "",
@@ -145,7 +145,7 @@ function OAuth2JoinPage(props) {
             email: <></>,
         })
         setSelectMenu(e.target.value);
-    };
+    }
 
     const handleInputUserOnChange = (e) => {
         setInputUser(inputUser => ({
@@ -162,12 +162,13 @@ function OAuth2JoinPage(props) {
             provider: searchParams.get("provider"),
         }
         const mergeData = await oauth2MergeApi(mergeUser);
-        if(!mergeData.isSuceess) {
-            if(mergeData.fieldErrors === "loginError"){
+
+        if (!mergeData.isSuceess) {
+            if (mergeData.errorStatus === "loginError") {
                 alert(mergeData.error);
                 return;
             }
-            if(mergeData.errorStatus === "fieldError"){
+            if (mergeData.errorStatus === "fieldError") {
                 showFieldErrorMessage(mergeData.error);
                 return;
             }
@@ -182,17 +183,15 @@ function OAuth2JoinPage(props) {
             oauth2Name: searchParams.get("oAuth2Name"),
             provider: searchParams.get("provider"),
         }
-        const joinData = await oauth2JoinApi(joinUser);
-        if(!joinData.isSuceess) {
-            if(!joinData.isSuceess) {
-                showFieldErrorMessage(joinData.fieldErrors);
-                return;
-            }
+
+        const joinData = await oAuth2SignupApi(joinUser);
+        if (!joinData.isSuceess) {
+            showFieldErrorMessage(joinData.fieldErrors);
+            return;
         }
-        alert("회원가입 및 계정 통합이 완료되었습니다.");
+        alert("회원가입이 완료되었습니다.");
         navigate("/user/login");
     }
-
 
     const showFieldErrorMessage = (fieldErrors) => {
         let EmptyFieldErrors = {
@@ -215,15 +214,15 @@ function OAuth2JoinPage(props) {
 
     return (
         <div css={layout}>
-            <Link to={"/"} css={logo}>사이트 로고</Link>
+            <Link to={"/"}><h1 css={logo}>사이트 로고</h1></Link>
             <div css={selectMenuBox}>
-                <input type="radio" id="merge" name='selectMenu'
-                    onChange={handleSelectMenuOnChange}
+                <input type="radio" id="merge" name="selectMenu"
+                    onChange={handleSeletMenuOnChange}
                     checked={selectMenu === "merge"} value="merge" />
                 <label htmlFor="merge">계정통합</label>
 
-                <input type="radio" id="join" name='selectMenu'
-                    onChange={handleSelectMenuOnChange}
+                <input type="radio" id="join" name="selectMenu"
+                    onChange={handleSeletMenuOnChange}
                     checked={selectMenu === "join"} value="join" />
                 <label htmlFor="join">회원가입</label>
             </div>

@@ -40,5 +40,11 @@ CREATE TABLE BOARD(
     id BIGINT AUTO_INCREMENT PRIMARY KEY not null,
     title VARCHAR(255) not null,
     content LONGTEXT not null,
+    user_id BIGINT not null,
+    view_count INT NOT NULL DEFAULT 0
+);
+CREATE TABLE board_like(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    board_id BIGINT not null,
     user_id BIGINT not null
 );

@@ -1,6 +1,9 @@
 package com.study.SpringSecurityMybatis.service;
 
-import com.study.SpringSecurityMybatis.dto.request.*;
+import com.study.SpringSecurityMybatis.dto.request.ReqOAuth2MergeDto;
+import com.study.SpringSecurityMybatis.dto.request.ReqProfileImgDto;
+import com.study.SpringSecurityMybatis.dto.request.ReqSigninDto;
+import com.study.SpringSecurityMybatis.dto.request.ReqSignupDto;
 import com.study.SpringSecurityMybatis.dto.response.RespDeleteUserDto;
 import com.study.SpringSecurityMybatis.dto.response.RespSigninDto;
 import com.study.SpringSecurityMybatis.dto.response.RespSignupDto;
@@ -16,25 +19,25 @@ import com.study.SpringSecurityMybatis.repository.UserMapper;
 import com.study.SpringSecurityMybatis.repository.UserRolesMapper;
 import com.study.SpringSecurityMybatis.security.jwt.JwtProvider;
 import com.study.SpringSecurityMybatis.security.principal.PrincipalUser;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class UserService {
 
     @Value("${user.profile.img.default}")
@@ -53,18 +56,11 @@ public class UserService {
 
     public Boolean isDuplicateUsername(String username) {
         return Optional.ofNullable(userMapper.findByUsername(username)).isPresent();
-//        return userMapper.findByUsername(username) != null; 이랑 같음
     }
 
-
-    // User, Role에서 User는 데이터가 들어가고 Role에서 에러가 터졌을 때
-    // User는 데이터가 들어간 상태인데 Role은 안들어가면 데이터가 꼬이기 때문에
-    // Exception이 터졌을때 User도 데이터가 안들어간 상태로 되돌리는 기능
-    // @Transactional(rollbackFor = SignupException.class)
     @Transactional(rollbackFor = SignupException.class)
-    public RespSignupDto insertUserAndUserRoles(ReqSignupDto dto) throws SignupException {
+    public RespSignupDto insertUserAndUserRoles(ReqSignupDto dto) {
         User user = null;
-
         try {
             user = dto.toEntity(passwordEncoder);
             userMapper.save(user);
@@ -107,31 +103,31 @@ public class UserService {
         User user = userMapper.findByUsername(username);
 
         if(user == null) {
-            throw new UsernameNotFoundException("사용자 정보를 다시 확인하세요.");
+            throw new UsernameNotFoundException("사용장 정보를 다시 확인하세요.");
         }
 
         if(!passwordEncoder.matches(password, user.getPassword())) {
-            throw new BadCredentialsException("사용자 정보를 다시 확인하세요.");
+            throw new BadCredentialsException("사용장 정보를 다시 확인하세요.");
         }
 
         return user;
     }
 
     @Transactional(rollbackFor = SQLException.class)
-    public RespDeleteUserDto deleteUser(Long id){
-
+    public RespDeleteUserDto deleteUser(Long id) {
         User user = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         PrincipalUser principalUser = (PrincipalUser) authentication.getPrincipal();
-        if (principalUser.getId() != id){
+        if(principalUser.getId() != id) {
             throw new AuthenticationServiceException("삭제 할 수 있는 권한이 없습니다.");
         }
         user = userMapper.findById(id);
-        if(user == null){
+        if(user == null) {
             throw new AuthenticationServiceException("해당 사용자는 존재하지 않는 사용자입니다.");
         }
         userRolesMapper.deleteByUserId(id);
         userMapper.deleteById(id);
+
         return RespDeleteUserDto.builder()
                 .isDeleting(true)
                 .message("사용자 삭제 완료")
@@ -139,7 +135,7 @@ public class UserService {
                 .build();
     }
 
-    public RespUserInfoDto getUserinfo(Long id) {
+    public RespUserInfoDto getUserInfo(Long id) {
         User user = userMapper.findById(id);
         Set<String> roles = user.getUserRoles().stream().map(
                 userRole -> userRole.getRole().getName()
@@ -155,18 +151,23 @@ public class UserService {
                 .build();
     }
 
-    public Boolean updateProfileImg(ReqProfileImgDto dto){
-        PrincipalUser principalUser = (PrincipalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public Boolean updateProfileImg(ReqProfileImgDto dto) {
+        PrincipalUser principalUser =
+                (PrincipalUser) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
 
         if(dto.getImg() == null || dto.getImg().isBlank()) {
             userMapper.modifyImgById(principalUser.getId(), defaultProfileImg);
             return true;
         }
+
         userMapper.modifyImgById(principalUser.getId(), dto.getImg());
         return true;
     }
 
-    public OAuth2User mergeSignin(ReqAuth2MergeDto dto){
+    public OAuth2User mergeSignin(ReqOAuth2MergeDto dto) {
         User user = checkUsernameAndPassword(dto.getUsername(), dto.getPassword());
         return OAuth2User.builder()
                 .userId(user.getId())
@@ -174,5 +175,13 @@ public class UserService {
                 .provider(dto.getProvider())
                 .build();
     }
-
 }
+
+
+
+
+
+
+
+
+

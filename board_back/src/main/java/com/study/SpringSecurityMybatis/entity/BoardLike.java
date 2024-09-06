@@ -9,18 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class OAuth2User {
+public class BoardLike {
     private Long id;
+    private Long boardId;
     private Long userId;
-    private String oAuth2Name;
-    private String provider;
 }
-
-
-
-
-
-
-
-
-

@@ -105,7 +105,6 @@ function UserJoinPage(props) {
         alert(`${signupData.ok.message}`);
         navigate("/user/login");
     }
-    
 
     const showFieldErrorMessage = (fieldErrors) => {
         let EmptyFieldErrors = {

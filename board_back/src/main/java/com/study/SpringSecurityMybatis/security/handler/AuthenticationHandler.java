@@ -20,4 +20,5 @@ public class AuthenticationHandler implements AuthenticationEntryPoint {
         response.getWriter().println("인증 토큰이 유효하지 않습니다.");
         authException.printStackTrace();
     }
+
 }

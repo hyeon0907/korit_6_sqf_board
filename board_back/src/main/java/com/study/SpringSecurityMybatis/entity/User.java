@@ -24,7 +24,7 @@ public class User {
     private Set<OAuth2User> oAuth2Users;
     private Set<UserRoles> userRoles;
 
-    public PrincipalUser toPrincipal(){
+    public PrincipalUser toPrincipal() {
         return PrincipalUser.builder()
                 .id(id)
                 .username(username)
@@ -32,5 +32,12 @@ public class User {
                 .roles(userRoles)
                 .build();
     }
-
 }
+
+
+
+
+
+
+
+

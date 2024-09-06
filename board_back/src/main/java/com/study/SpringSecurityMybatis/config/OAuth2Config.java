@@ -6,8 +6,10 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 
 @Configuration
 public class OAuth2Config {
+
     @Bean
     public DefaultOAuth2UserService defaultOAuth2UserService() {
         return new DefaultOAuth2UserService();
     }
+
 }
