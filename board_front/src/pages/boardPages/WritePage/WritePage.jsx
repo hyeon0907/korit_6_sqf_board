@@ -174,6 +174,11 @@ function WritePage(props) {
                     editor.setSelection(editPoint.index + 1);
                     editor.insertText(editPoint.index + 1, "\n");
                     setUploading(false);
+                    setBoard({
+                        ...board,
+                        content: editor.root.innnerHTML,
+                    }
+                    )
                 }
             );
         }
@@ -202,7 +207,7 @@ function WritePage(props) {
                 {
                     isUploading &&
                     <div css={loadingLayout}>
-                        <RingLoader />
+                        <RingLoader/>
                     </div>
                 }
                 <ReactQuill
@@ -223,8 +228,8 @@ function WritePage(props) {
                         imageResize: {
                             parchment: Quill.import("parchment")
                         },
-
                     }}
+                    value={board.content}
                 />
             </div>
         </div>
