@@ -1,8 +1,9 @@
 spring:
   config:
-    import: application_secret.yml
+    import: application-secret.yml
+
   datasource:
-    url: jdbc:h2:file:./data/auth_db;MODE=MySql
+    url: jdbc:h2:file:./data/auth_db;MODE=MySQL
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -14,10 +15,13 @@ spring:
       enabled: true
       path: /h2-console
 
+
 mybatis:
   mapper-locations:
     - /mappers/*.xml
+
 user:
   profile:
     img:
-      default: https://firebasestorage.googleapis.com/v0/b/userprofile-6905d.appspot.com/o/user%2Fdefault-user-icon.jpg?alt=media&token=f004f9ab-04f1-479e-a8b5-1ea975de0d7d
+      default: https://firebasestorage.googleapis.com/v0/b/userprofile-8cc14.appspot.com/o/user%2Fdefault.png?alt=media&token=711743e9-c343-4ef0-ab4e-7afcef9f6542
+

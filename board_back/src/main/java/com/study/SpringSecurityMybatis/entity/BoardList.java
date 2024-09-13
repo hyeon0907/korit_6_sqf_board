@@ -11,15 +11,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Comment {
+public class BoardList {
     private Long id;
-    private Long boardId;
-    private Long parentId;
+    private String title;
     private String content;
-    private Long writerId;
-    private LocalDateTime createDate;
-    private int level;
-
-    private String username;
-    private String img;
+    private String writerName;
+    private Integer likeCount;
+    private Integer viewCount;
 }

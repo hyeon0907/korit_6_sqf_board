@@ -1,6 +1,7 @@
 package com.study.SpringSecurityMybatis.controller;
 
 import com.study.SpringSecurityMybatis.aspect.annotation.ValidAop;
+import com.study.SpringSecurityMybatis.dto.request.ReqBoardListDto;
 import com.study.SpringSecurityMybatis.dto.request.ReqWriteBoardDto;
 import com.study.SpringSecurityMybatis.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,11 @@ public class BoardController {
     @PostMapping("/board")
     public ResponseEntity<?> write(@Valid @RequestBody ReqWriteBoardDto dto, BindingResult bindingResult) {
         return ResponseEntity.ok().body(Map.of("boardId", boardService.writeBoard(dto)));
+    }
+
+    @GetMapping("/board/list")
+    public ResponseEntity<?> getBoards(ReqBoardListDto dto) {
+        return ResponseEntity.ok().body(boardService.getBoardList(dto));
     }
 
     @GetMapping("/board/{boardId}")

@@ -4,17 +4,14 @@ import com.study.SpringSecurityMybatis.entity.Comment;
 import lombok.Data;
 
 @Data
-public class ReqWriteCommentDto {
-    private Long boardId;
-    private Long parentId;
+public class ReqModifyCommentDto {
+    private Long commentId;
     private String content;
 
-    public Comment toEntity(Long writerId) {
+    public Comment toEntity() {
         return Comment.builder()
-                .boardId(boardId)
-                .parentId(parentId)
+                .id(commentId)
                 .content(content)
-                .writerId(writerId)
                 .build();
     }
 }
