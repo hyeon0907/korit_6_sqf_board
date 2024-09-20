@@ -45,17 +45,21 @@ const boardlist = css`
     }
 `
 
-function NumberBoardListPage(props) {
+function SearchBoardPage(props) {
     const [searchParams, setSearchParams] = useSearchParams();
     const [totalPageCount, setTotalPageCount] = useState(1);
+    const [searchValue, SetSearchValue] = useState(searchParams.get("search") ?? "");
+    const [searchOption, setSearchOption] = useState(searchParams.get("option") ?? "all");
     const navigate = useNavigate();
     const limit = 10;
-    
+
+
     const boardList = useQuery(
-        ["boardListQuery", searchParams.get("page")],
-        async () => await instance.get(`/board/list?page=${searchParams.get("page")}&limit=${limit}`),
+        ["boardListQuery", searchParams.get("page"), searchParams.get("option"), searchParams.get("search")],
+        async () => await instance.get(`/board/search?page=${searchParams.get("page")}&limit=${limit}&search=${searchValue}&option=${searchOption}`),
         {
             retry: 0,
+            refetchOnWindowFocus: false,
             onSuccess: response => setTotalPageCount(
                 response.data.totalCount % limit === 0
                     ? response.data.totalCount / limit
@@ -63,13 +67,34 @@ function NumberBoardListPage(props) {
         }
     );
 
-    const handlePageOnChange = (event) => {
-        navigate(`/board/number?page=${event.selected + 1}`);
+    const handleSearchInputOnChange = (e) => {
+        SetSearchValue(e.target.value);
+    };
+
+    const handleSearchOptionChange = (e) => {
+        setSearchOption(e.target.value);
+    };
+    const handleSearchButtonOnClick = () => {
+        navigate(`/board/search?page=1&option=${searchOption}&search=${searchValue}`);
+    };
+
+
+    const handlePageOnChange = (e) => {
+        navigate(`/board/search?page=${e.selected + 1}&option=${searchOption}&search=${searchValue}`);
     }
 
     return (
         <div>
             <Link to={"/"}><h1>사이트 로고</h1></Link>
+            <div>
+                <select onChange={handleSearchOptionChange} value={searchOption}>
+                    <option value="all">전체</option>
+                    <option value="title">제목</option>
+                    <option value="writer">작성자</option>
+                </select>
+                <input type="search" onChange={handleSearchInputOnChange} value={searchValue} />
+                <button onClick={handleSearchButtonOnClick}>검색</button>
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -82,11 +107,11 @@ function NumberBoardListPage(props) {
                 </thead>
                 <tbody css={boardlist}>
                     {
-                        boardList?.isLoading
+                        boardList.isLoading
                             ?
                             <></>
                             :
-                            boardList.data.data.boards.map(board =>
+                            boardList.data?.data?.boards.map(board =>
                                 <tr key={board.id} onClick={() => navigate(`/board/detail/${board.id}`)}>
                                     <td>{board.id}</td>
                                     <td>{board.title}</td>
@@ -115,4 +140,4 @@ function NumberBoardListPage(props) {
     );
 }
 
-export default NumberBoardListPage;
+export default SearchBoardPage;

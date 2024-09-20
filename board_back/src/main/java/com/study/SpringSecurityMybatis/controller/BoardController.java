@@ -2,8 +2,11 @@ package com.study.SpringSecurityMybatis.controller;
 
 import com.study.SpringSecurityMybatis.aspect.annotation.ValidAop;
 import com.study.SpringSecurityMybatis.dto.request.ReqBoardListDto;
+import com.study.SpringSecurityMybatis.dto.request.ReqModifyBoardDto;
+import com.study.SpringSecurityMybatis.dto.request.ReqSearchBoardDto;
 import com.study.SpringSecurityMybatis.dto.request.ReqWriteBoardDto;
 import com.study.SpringSecurityMybatis.service.BoardService;
+import com.study.SpringSecurityMybatis.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -17,6 +20,9 @@ public class BoardController {
 
     @Autowired
     private BoardService boardService;
+
+    @Autowired
+    private CommentService commentService;
 
     @ValidAop
     @PostMapping("/board")
@@ -48,6 +54,25 @@ public class BoardController {
     @DeleteMapping("/board/like/{boardLikeId}")
     public ResponseEntity<?> dislike(@PathVariable Long boardLikeId) {
         boardService.dislike(boardLikeId);
+        return ResponseEntity.ok().body(true);
+    }
+
+    @GetMapping("/board/search")
+    public ResponseEntity<?> getSearchBoards(ReqSearchBoardDto dto){
+        System.out.println(dto);
+        return ResponseEntity.ok().body(boardService.getSearchBoard(dto));
+    }
+
+    @DeleteMapping("/board/detail/{boardId}")
+    public ResponseEntity<?> delete(@PathVariable Long boardId){
+        boardService.deleteByBoardId(boardId);
+        commentService.deleteBoard(boardId);
+        return ResponseEntity.ok().body(true);
+    }
+
+    @PutMapping("/board/modify/{boardId}")
+    public ResponseEntity<?> modifyBoard(@PathVariable Long boardId, @RequestBody ReqModifyBoardDto dto){
+        boardService.modifyBoard(boardId, dto);
         return ResponseEntity.ok().body(true);
     }
 }

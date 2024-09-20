@@ -5,6 +5,7 @@ import { instance } from "../../../apis/util/instance";
 import { css } from "@emotion/react";
 import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
 import { useState } from "react";
+import ModifyPage from "../ModifyPage/ModifyPage";
 
 const layout = css`
     box-sizing: border-box;
@@ -195,6 +196,8 @@ function DetailPage(props) {
         content: "",
     });
 
+    const modifyMode = useState(1);
+
     const board = useQuery(
         ["boardQuery", boardId],
         async () => {
@@ -205,6 +208,7 @@ function DetailPage(props) {
             retry: 0,
         }
     );
+
 
     const boardLike = useQuery(
         ["boardLikeQuery"],
@@ -290,6 +294,16 @@ function DetailPage(props) {
         }
     );
 
+    const deleteBoardMutaion = useMutation(
+        async () => await instance.delete(`/board/detail/${boardId}`),
+        {
+            onSuccess: response => {
+                alert("게시물을 삭제하였습니다.");
+                navigate("/board/scroll");
+            }
+        }
+    )
+
     const handleLikeOnClick = () => {
         if (!userInfoData?.data) {
             if (window.confirm("로그인 후 이용가능합니다. 로그인 페이지로 이동하시겠습니까?")) {
@@ -358,6 +372,26 @@ function DetailPage(props) {
         deleteCommentMutaion.mutateAsync(commentId);
     }
 
+    const handleDeleteBoardButtonOnClick = () => {
+        if(window.confirm("정말 삭제하시겠습니까?")){
+            deleteBoardMutaion.mutateAsync();
+        }
+        return;
+    };
+
+    const handleModifyBoardButtonOnclick = () => {
+        console.log(board.data.data.content);
+        if(window.confirm("정말 수정하시겠습니까?")){
+            navigate(`/board/modify`, {
+                state: {
+                    boardId: `${boardId}`,
+                    title: `${board.data.data.title}`,
+                    content: `${board.data.data.content}`
+                }
+            });
+        }
+    };
+
     return (
         <div css={layout}>
             <Link to={"/"}><h1>사이트 로고</h1></Link>
@@ -405,8 +439,8 @@ function DetailPage(props) {
                                 {
                                     board.data.data.writerId === userInfoData?.data.userId &&
                                     <>
-                                        <button>수정</button>
-                                        <button>삭제</button>
+                                        <button onClick={handleModifyBoardButtonOnclick}> 수정</button>
+                                        <button onClick={handleDeleteBoardButtonOnClick}>삭제</button>
                                     </>
                                 }
                             </div>

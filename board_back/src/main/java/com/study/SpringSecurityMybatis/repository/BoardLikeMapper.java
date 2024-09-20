@@ -12,4 +12,5 @@ public interface BoardLikeMapper {
             @Param("boardId") Long boardId,
             @Param("userId") Long UserId);
     int getLikeCountByBoardId(Long boardId);
+    int deleteByBoardId(Long boardId);
 }

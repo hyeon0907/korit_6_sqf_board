@@ -1,6 +1,8 @@
 package com.study.SpringSecurityMybatis.service;
 
 import com.study.SpringSecurityMybatis.dto.request.ReqBoardListDto;
+import com.study.SpringSecurityMybatis.dto.request.ReqModifyBoardDto;
+import com.study.SpringSecurityMybatis.dto.request.ReqSearchBoardDto;
 import com.study.SpringSecurityMybatis.dto.request.ReqWriteBoardDto;
 import com.study.SpringSecurityMybatis.dto.response.RespBoardDetailDto;
 import com.study.SpringSecurityMybatis.dto.response.RespBoardLikeInfoDto;
@@ -11,6 +13,7 @@ import com.study.SpringSecurityMybatis.entity.BoardList;
 import com.study.SpringSecurityMybatis.exception.NotFoundBoardException;
 import com.study.SpringSecurityMybatis.repository.BoardLikeMapper;
 import com.study.SpringSecurityMybatis.repository.BoardMapper;
+import com.study.SpringSecurityMybatis.repository.CommentMapper;
 import com.study.SpringSecurityMybatis.security.principal.PrincipalUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class BoardService {
@@ -97,5 +101,30 @@ public class BoardService {
 
     public void dislike(Long boardLikeId) {
         boardLikeMapper.deleteById(boardLikeId);
+    }
+
+    public RespBoardListDto getSearchBoard(ReqSearchBoardDto dto){
+        Long startIndex = (dto.getPage() - 1) * dto.getLimit();
+        Map<String, Object> params = Map.of(
+                "startIndex", startIndex,
+                "limit", dto.getLimit(),
+                "search", dto.getSearch() == null ? "" : dto.getSearch(),
+                "option", dto.getOption() == null || dto.getOption().isBlank()? "" : dto.getOption()
+        );
+        List<BoardList> boardLists = boardMapper.findAllBySearch(params);
+        Integer boardTotalCount = boardMapper.getCountAllBySearch(params);
+        return RespBoardListDto.builder()
+                .boards(boardLists)
+                .totalCount(boardTotalCount)
+                .build();
+    }
+
+    public void deleteByBoardId(Long boardId){
+        boardMapper.deleteByBoardId(boardId);
+        boardLikeMapper.deleteByBoardId(boardId);
+    }
+
+    public void modifyBoard(Long boardId, ReqModifyBoardDto dto){
+        boardMapper.modifyByBoard(dto.toEntity(boardId));
     }
 }

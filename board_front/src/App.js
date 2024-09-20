@@ -12,6 +12,8 @@ import WritePage from "./pages/boardPages/WritePage/WritePage";
 import DetailPage from "./pages/boardPages/DetailPage/DetailPage";
 import NumberBoardListPage from "./pages/boardPages/NumberBoardListPage/NumberBoardListPage";
 import ScrollBoardListPage from "./pages/boardPages/ScrollBoardListPage/ScrollBoardListPage";
+import SearchBoardPage from "./pages/boardPages/SearchBoardPage/SearchBoardPage";
+import ModifyPage from "./pages/boardPages/ModifyPage/ModifyPage";
 
 function App() {
     const location = useLocation();
@@ -86,10 +88,12 @@ function App() {
             <Route path="/user/login/oauth2" element={ <OAuth2LoginPage /> } />
             <Route path="/profile" element={ <UserProfilePage />} />
 
+            <Route path="/board/search" element={ <SearchBoardPage /> }/>
             <Route path="/board/number" element={ <NumberBoardListPage /> }/>
             <Route path="/board/scroll" element={ <ScrollBoardListPage/> }/>
             <Route path="/board/detail/:boardId" element={ <DetailPage /> }/>
             <Route path="/board/write" element={ <WritePage /> } />
+            <Route path="/board/modify" element={ <ModifyPage /> } />
 
 
             <Route path="/admin/*" element={ <></> } />

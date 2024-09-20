@@ -15,4 +15,5 @@ public interface CommentMapper {
     Comment findById(Long id);
     Comment findByParentId(Long parentId);
     int updateById(Comment comment);
+    int deleteByBoardId(Long boardId);
 }

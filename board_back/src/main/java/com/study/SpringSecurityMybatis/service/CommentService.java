@@ -56,4 +56,8 @@ public class CommentService {
             throw new AccessDeniedException();
         }
     }
+
+    public void deleteBoard(Long BoardId){
+        commentMapper.deleteByBoardId(BoardId);
+    }
 }

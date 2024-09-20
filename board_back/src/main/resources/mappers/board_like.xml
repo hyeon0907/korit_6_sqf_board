@@ -17,6 +17,13 @@
         where
             id = #{id}
     </delete>
+    <delete id="deleteByBoardId">
+        delete
+        from
+            board_like
+        where
+            board_id = #{boardId}
+    </delete>
 
     <select id="findByBoardIdAndUserId" resultType="com.study.SpringSecurityMybatis.entity.BoardLike">
         select
